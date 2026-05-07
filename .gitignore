@@ -1,49 +1,55 @@
-# Dependencies
-node_modules/
-.pnp
-.pnp.js
+# See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
 
-# Build output
-.next/
-out/
-dist/
-build/
+# dependencies
+/node_modules
+/.pnp
+.pnp.*
+.yarn/*
+!.yarn/patches
+!.yarn/plugins
+!.yarn/releases
+!.yarn/versions
 
-# Environment variables — NEVER commit secrets
-.env
-.env.local
-.env.development.local
-.env.test.local
-.env.production.local
+# testing
+/coverage
 
-# Vercel
-.vercel
+# next.js
+/.next/
+/out/
 
-# IDE / OS
+# production
+/build
+
+# misc
 .DS_Store
-Thumbs.db
-*.swp
-*.swo
-.idea/
-.vscode/settings.json
+*.pem
 
-# Logs
-*.log
+# debug
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
+.pnpm-debug.log*
 
-# Testing
-coverage/
+# env files (can opt-in for committing if needed)
+.env*
 
-# Misc
+# vercel
+.vercel
+
+# typescript
 *.tsbuildinfo
 next-env.d.ts
 
-# ─── Claude Code artifacts ───────────────────────────────────────────────────
-# These are local session/cache files from the Claude Code CLI.
-# They are not part of the project source and should not be in the public repo.
+# ─── Claude Code / AI assistant artifacts ────────────────────────────────────
+# Local session/cache files from the Claude Code CLI — not project source.
 .claude/
 
-# Personal planning doc (kept locally, disclosed in REFLECTION.md)
+# Auto-generated AI assistant instruction files (created by shadcn/Next.js tooling)
+CLAUDE.md
+AGENTS.md
+
+# Personal planning doc — kept locally, AI usage disclosed in REFLECTION.md
 plan.md
+
+# Assignment PDF — confidential, not for public repo
+*.pdf
