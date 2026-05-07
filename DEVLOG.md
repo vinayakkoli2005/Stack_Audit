@@ -35,15 +35,26 @@ One entry per day, written the same day. Backdating is visible in git history.
 
 ## Day 2 — 2026-05-08
 
-**Hours worked:**
+**Hours worked:** 5
 
 **What I did:**
+- Defined all TypeScript types for the audit engine (`AuditInput`, `AuditResult`, `Recommendation`, `ToolEntry`) in `src/lib/audit/types.ts` with strict typing throughout.
+- Built `src/lib/audit/pricing.ts` — a constants file with all 8 vendors, all tiers, prices per seat, min seats, use-case fit tags, and source URLs traceable to `PRICING_DATA.md`.
+- Implemented the full `AuditEngine` in `src/lib/audit/engine.ts` as a pure function: `run(input) → AuditResult`. Five rules: use-case fit (highest priority), API-vs-subscription, plan-fit, redundancy detection, and the Credex CTA threshold.
+- Wrote 8 test files covering 24 test cases across all rules. Hit 4 failing tests on first run — debugged root cause (rule execution order swallowing recs + 3 incorrect test expectations), fixed engine and tests. All 24 tests now pass.
+- Key bug fixed: rule execution order mattered — plan-fit was running before use-case fit, causing a "downgrade within vendor" rec to swallow a more valuable "switch vendor" rec. Reordered: use-case fit → API-vs-seat → plan-fit.
 
 **What I learned:**
+- Rule precedence in a deterministic engine is a real design decision, not a detail. The order determines which recommendation wins when multiple rules fire for the same tool — and "switch vendor" is almost always a bigger win than "downgrade tier."
+- Writing tests before the engine was wired revealed that my mental model of "ChatGPT Team → Cursor" was correct but `checkPlanFit` was intercepting it. Tests caught this immediately; without them it would have surfaced as a confusing product bug.
 
 **Blockers / what I'm stuck on:**
+- Still waiting on 2 of 3 user interview replies. One confirmed for tomorrow (Day 3). Need to follow up with 3 more people today.
 
 **Plan for tomorrow:**
+- Build the form UI: React Hook Form + zod schema matching `AuditInput`, localStorage persistence, tool cards for all 8 vendors.
+- Build results page layout (wired to real engine output).
+- Conduct user interview #1 and write up notes same day.
 
 ---
 
