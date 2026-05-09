@@ -60,15 +60,34 @@ One entry per day, written the same day. Backdating is visible in git history.
 
 ## Day 3 — 2026-05-09
 
-**Hours worked:**
+**Hours worked:** 6
 
 **What I did:**
+- Installed form stack: `react-hook-form`, `zod`, `@hookform/resolvers`. Discovered project is on Zod v4 (breaking change from v3 — `invalid_type_error` renamed to `error`, `coerce` returns `unknown` instead of typed output). Had to write a plain `z.number()` schema and use `valueAsNumber` on inputs instead of `z.coerce`, which is the correct Zod v4 pattern.
+- Added 6 shadcn components: `Select`, `Input`, `Card`, `Badge`, `Separator`, `Label`.
+- Built `src/lib/audit/schema.ts` — Zod schema that exactly mirrors `AuditInput` type, enabling validated form output to pass directly to `run()` with no mapping.
+- Built `src/lib/audit/vendors.ts` — vendor/tier metadata for form dropdowns (labels, tier options, default prices). Single source of truth so adding a new vendor only requires one file change.
+- Built `AuditForm` component (`src/components/audit/AuditForm.tsx`): dynamic tool cards via `useFieldArray`, auto-fills `monthlySpend` when vendor/tier changes, debounced localStorage persistence (600ms), full Zod validation with inline field errors, keyboard accessible.
+- Built `ResultsView` component (`src/components/audit/ResultsView.tsx`): hero savings number, per-recommendation cards with `<details>` "Why?" expander (zero JS, fully accessible), action badges color-coded by type, Credex CTA gated at $500/mo threshold, "Your stack is lean" path when savings < $100.
+- Built `AuditApp` orchestrator (`src/components/audit/AuditApp.tsx`): manages form → loading → results state machine, calls engine synchronously with a 1-frame delay to let React render the loading state.
+- Replaced placeholder `page.tsx` with real landing page: sticky nav, hero headline, trust signals, `AuditApp` embedded.
+- Updated layout metadata: proper title and description for OG/SEO.
+- All 24 engine tests still pass after today's changes. TypeScript strict — zero errors.
 
 **What I learned:**
+- Zod v4's `z.coerce.number()` infers `ZodPipeline<unknown, number>` — the output is `number` at runtime but TypeScript sees `unknown` as the schema's inferred type. This breaks `@hookform/resolvers`' type matching because the resolver infers from the schema type, not the output type. The fix: use `z.number()` directly and set `valueAsNumber: true` on the `<input>` registration — react-hook-form then hands the resolver a real number, and everything aligns.
+- The `<details>`/`<summary>` pattern for the "Why?" expander is underrated — zero JavaScript, keyboard navigable, screen-reader announced, and the CSS-only `group-open:` Tailwind variant handles the open/closed icon swap cleanly.
 
 **Blockers / what I'm stuck on:**
+- User interview #1 confirmed for today but rescheduled to tomorrow morning. Interview #2 still unconfirmed — following up tonight.
 
 **Plan for tomorrow:**
+- Connect form → `/api/audit` route → engine → results (end-to-end with real server round-trip).
+- Set up Supabase: `audits`, `leads`, `events` tables with RLS. Store audit results, generate `shareId`.
+- Build `/r/[shareId]` public share route with SSR OG tags.
+- `/api/summary` → Claude Haiku call for personalized narrative summary.
+- User interview #1 (rescheduled to morning).
+- Write `PROMPTS.md` with prompt iterations documented.
 
 ---
 
