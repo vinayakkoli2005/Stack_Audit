@@ -1,11 +1,13 @@
 "use client";
 
+import { useState } from "react";
 import type { AuditResult, Recommendation } from "@/lib/audit/types";
 import { VENDOR_LABELS } from "@/lib/audit/vendors";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import { ExternalLink, ArrowRight, TrendingDown, RefreshCw, Package } from "lucide-react";
 
 const ACTION_LABELS: Record<string, string> = {
@@ -115,6 +117,81 @@ function RecommendationCard({ rec }: { rec: Recommendation }) {
   );
 }
 
+// ── Email capture ─────────────────────────────────────────────────────────────
+
+function EmailCapture({
+  auditId,
+  monthlySavings,
+  showCredexCta,
+}: {
+  auditId?: string | null;
+  monthlySavings: number;
+  showCredexCta: boolean;
+}) {
+  const [email, setEmail] = useState("");
+  const [honeypot, setHoneypot] = useState("");
+  const [state, setState] = useState<"idle" | "loading" | "done" | "error">("idle");
+
+  async function handleSubmit(e: React.FormEvent) {
+    e.preventDefault();
+    if (!email) return;
+    setState("loading");
+    try {
+      const res = await fetch("/api/leads", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email, auditId, monthlySavings, showCredexCta, honeypot }),
+      });
+      setState(res.ok ? "done" : "error");
+    } catch {
+      setState("error");
+    }
+  }
+
+  if (state === "done") {
+    return (
+      <div className="rounded-xl border border-emerald-200 dark:border-emerald-800 bg-emerald-50 dark:bg-emerald-950/30 px-5 py-4 text-sm text-emerald-700 dark:text-emerald-400">
+        Results sent — check your inbox.
+      </div>
+    );
+  }
+
+  return (
+    <form onSubmit={handleSubmit} className="rounded-xl border border-border bg-muted/30 px-5 py-5 space-y-3">
+      <p className="text-sm font-medium">Email me these results</p>
+      <p className="text-xs text-muted-foreground">One-time summary — no spam, no newsletter.</p>
+      {/* Honeypot — hidden from real users, filled by bots */}
+      <input
+        tabIndex={-1}
+        aria-hidden="true"
+        autoComplete="off"
+        className="hidden"
+        value={honeypot}
+        onChange={(e) => setHoneypot(e.target.value)}
+      />
+      <div className="flex gap-2">
+        <Input
+          type="email"
+          placeholder="you@company.com"
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
+          required
+          className="flex-1"
+          aria-label="Email address"
+        />
+        <Button type="submit" disabled={state === "loading"} className="shrink-0">
+          {state === "loading" ? "Sending…" : "Send"}
+        </Button>
+      </div>
+      {state === "error" && (
+        <p className="text-xs text-destructive">Something went wrong — try again.</p>
+      )}
+    </form>
+  );
+}
+
+// ── Props ─────────────────────────────────────────────────────────────────────
+
 interface ResultsViewProps {
   result: AuditResult;
   onStartOver: () => void;
@@ -176,6 +253,13 @@ export function ResultsView({ result, onStartOver, shareId, summary }: ResultsVi
           <p className="text-sm leading-relaxed">{summary}</p>
         </div>
       )}
+
+      {/* Email capture */}
+      <EmailCapture
+        auditId={shareId}
+        monthlySavings={totalMonthlySavings}
+        showCredexCta={showCredexCta}
+      />
 
       {/* Recommendations list */}
       {recommendations.length > 0 && (

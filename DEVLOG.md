@@ -129,15 +129,29 @@ One entry per day, written the same day. Backdating is visible in git history.
 
 ## Day 5 — 2026-05-11
 
-**Hours worked:**
+**Hours worked:** 4
 
 **What I did:**
+- Built `/api/leads` POST route: Zod validation (email, auditId, monthlySavings, showCredexCta), honeypot field check (silent fake-200 on bot detection), Supabase insert into `leads` table, updates `audits.email` column, fires `email_captured` event, sends transactional email via Resend when configured. Graceful no-op without credentials.
+- Built `EmailCapture` component inside `ResultsView`: email input + hidden honeypot field, loading/done/error states, calls `/api/leads` on submit. One-line confirmation replaces the form on success.
+- Built shared `src/lib/rate-limit.ts`: sliding-window rate limiter using Upstash Redis REST API (ZADD + ZREMRANGEBYSCORE + ZCOUNT pattern). Fail-open when Redis not configured — never blocks real users on outage.
+- Wired rate limiting into both `/api/audit` (10 req/min per IP) and `/api/leads` (3 req/min per IP).
+- TypeScript strict: zero errors. All 24 engine tests still green.
 
 **What I learned:**
+- The ZADD + ZREMRANGEBYSCORE + ZCOUNT pattern is the cleanest sliding-window rate limiter you can build over a pure REST key-value API. No Lua scripting needed, no MULTI/EXEC — three sequential REST calls with idempotent semantics.
+- Honeypot fields work best when `tabIndex={-1}` and `aria-hidden="true"` — real users with accessibility tools don't accidentally fill them, and bots that parse the DOM still see the field. The silent fake-200 response is critical: if you return 400, sophisticated bots detect the defense and adapt.
+- Resend's free tier sends from `onboarding@resend.dev` without domain verification — good for testing but you need a verified domain for production. The `catch()` on the send call means email failures never surface as user-facing errors.
 
 **Blockers / what I'm stuck on:**
+- Resend and Upstash credentials not yet in `.env.local` — both features degrade gracefully without them. Email capture still stores to Supabase; rate limiting is allow-all.
+- Anthropic API key still absent — summary uses templated fallback, which is fine.
 
 **Plan for tomorrow:**
+- Write entrepreneurial docs: GTM.md, ECONOMICS.md, USER_INTERVIEWS.md, LANDING_COPY.md, METRICS.md (25 pts on rubric).
+- Conduct at least one user interview and document findings in USER_INTERVIEWS.md.
+- Start ARCHITECTURE.md with Mermaid system diagram.
+- Lighthouse audit: run against deployed URL, target Perf ≥ 85, A11y ≥ 90.
 
 ---
 

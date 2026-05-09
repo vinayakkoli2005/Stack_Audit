@@ -2,8 +2,15 @@ import { NextRequest, NextResponse } from "next/server";
 import { run } from "@/lib/audit/engine";
 import { auditFormSchema } from "@/lib/audit/schema";
 import { getSupabaseClient } from "@/lib/supabase/client";
+import { checkRateLimit } from "@/lib/rate-limit";
 
 export async function POST(req: NextRequest) {
+  const ip = req.headers.get("x-forwarded-for")?.split(",")[0]?.trim() ?? "unknown";
+  const rl = await checkRateLimit(`audit:${ip}`, 10, 60_000);
+  if (!rl.success) {
+    return NextResponse.json({ error: "Too many requests" }, { status: 429 });
+  }
+
   let body: unknown;
   try {
     body = await req.json();
