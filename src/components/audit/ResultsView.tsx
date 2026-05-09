@@ -118,9 +118,11 @@ function RecommendationCard({ rec }: { rec: Recommendation }) {
 interface ResultsViewProps {
   result: AuditResult;
   onStartOver: () => void;
+  shareId?: string | null;
+  summary?: string | null;
 }
 
-export function ResultsView({ result, onStartOver }: ResultsViewProps) {
+export function ResultsView({ result, onStartOver, shareId, summary }: ResultsViewProps) {
   const { totalMonthlySavings, totalAnnualSavings, recommendations, isAlreadyOptimal, showCredexCta } = result;
 
   return (
@@ -167,6 +169,14 @@ export function ResultsView({ result, onStartOver }: ResultsViewProps) {
         </div>
       )}
 
+      {/* AI narrative summary */}
+      {summary && (
+        <div className="rounded-xl border border-border bg-muted/40 p-4 space-y-1">
+          <p className="text-xs font-medium text-muted-foreground uppercase tracking-wide">Summary</p>
+          <p className="text-sm leading-relaxed">{summary}</p>
+        </div>
+      )}
+
       {/* Recommendations list */}
       {recommendations.length > 0 && (
         <div className="space-y-4">
@@ -188,12 +198,17 @@ export function ResultsView({ result, onStartOver }: ResultsViewProps) {
           variant="outline"
           className="flex-1"
           onClick={() => {
+            const shareUrl = shareId
+              ? `${window.location.origin}/r/${shareId}`
+              : window.location.href;
             if (navigator.share) {
-              navigator.share({ title: "My AI stack audit", url: window.location.href });
+              navigator.share({ title: "My AI stack audit", url: shareUrl });
+            } else {
+              navigator.clipboard.writeText(shareUrl);
             }
           }}
         >
-          Share results
+          {shareId ? "Copy share link" : "Share results"}
         </Button>
       </div>
 

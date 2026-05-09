@@ -93,15 +93,37 @@ One entry per day, written the same day. Backdating is visible in git history.
 
 ## Day 4 — 2026-05-10
 
-**Hours worked:**
+**Hours worked:** 5
 
 **What I did:**
+- Built `/api/audit` POST route: validates input with Zod, runs the deterministic engine server-side, generates `shareId` with `crypto.randomUUID()`, stores in Supabase `audits` + `events` tables. Graceful no-op when Supabase is not configured — form still works end-to-end without credentials.
+- Built `/api/summary` POST route: calls Claude Haiku with a tight system prompt ("CFO one-paragraph briefing, 80-100 words, plain prose"). Includes a deterministic templated fallback for when the API key is absent or the call fails — user experience never breaks.
+- Built `/r/[shareId]` public share page: SSR with `generateMetadata` that fetches the audit from Supabase and embeds savings numbers directly into OG title/description — no client JS needed for social previews. Uses `notFound()` for missing IDs.
+- Built `ShareResultsView` — read-only results component for the share page, strips all PII (no email, no raw spend inputs).
+- Updated `AuditApp` to call real API route, fetch AI summary in parallel (non-blocking), and fall back to client-side engine on network failure.
+- Updated `ResultsView` to display AI summary when available and use `shareId` URL in the share button (copies to clipboard if Web Share API unavailable).
+- Wrote `supabase/schema.sql` — `audits`, `leads`, `events` tables with RLS policies. Public can read a single audit by ID (share URL), cannot enumerate. Leads and events are service-only.
+- Created `.env.local.example` with all required env vars documented.
+- Updated `PROMPTS.md` to reflect the actual deployed system prompt and user prompt structure.
+- TypeScript strict: zero errors. All 24 engine tests still green.
 
 **What I learned:**
+- Next.js `generateMetadata` runs server-side and can call Supabase directly — this means the OG title can say "I found $640/mo in savings" from actual DB data, not a generic placeholder. No separate OG image service needed for text-based cards.
+- Fetching the AI summary "fire and forget" (non-blocking parallel fetch) is the right UX pattern here: the results page renders immediately with deterministic data, and the summary fades in when ready. The alternative (blocking on the LLM) would add 1-3 seconds of perceived latency for every audit.
+- `crypto.randomUUID()` is available natively in Node 19+ / Edge runtime — no `uuid` package needed.
 
 **Blockers / what I'm stuck on:**
+- Supabase project not created yet — waiting on credentials. All code is written and will work as soon as `.env.local` is populated.
+- Anthropic API key not yet available — templated fallback ensures the summary feature degrades gracefully.
+- User interview #1 still pending — rescheduled again to tomorrow morning.
 
 **Plan for tomorrow:**
+- Get Supabase credentials from Vinayak, run `schema.sql`, test full end-to-end flow.
+- Email capture form on results page → `/api/leads` route → Supabase + Resend transactional email.
+- Rate limiting with Upstash Redis + honeypot field.
+- Open Graph validation on the share URL.
+- Lighthouse pass on deployed URL (target: Perf ≥ 85, A11y ≥ 90).
+- User interview #1.
 
 ---
 
