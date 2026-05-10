@@ -1,61 +1,84 @@
-# METRICS.md
+# METRICS.md — Success Metrics and KPIs
 
 ## North Star Metric
 
-**Weekly high-intent audits completed**
+**Credex-qualified leads generated per week** — defined as a completed audit where total monthly savings > $500/mo AND the user provided their email.
 
-Definition: an audit where the user entered ≥3 tools, reached the results page, and spent ≥30 seconds on it.
-
-**Why this metric:**
-This is a B2B lead-gen tool that most users will touch once per quarter, not daily. DAU is the wrong shape — it would reward re-runs, which are noise. "High-intent audit completed" directly predicts both (a) a qualified lead for Credex and (b) a product experience good enough to generate a share. It's the moment value was delivered. Everything upstream is funnel health; everything downstream (email capture, consult booking) is conversion optimization. The North Star lives at value delivery.
+This is the metric that directly ties StackAudit's usage to Credex revenue. Everything else is either an input to this number or a health check.
 
 ---
 
-## 3 Input Metrics That Drive the North Star
+## Funnel metrics (ordered by stage)
 
-### 1. Form completion rate
-`audits_completed / audits_started`
-
-Target: ≥50%. If this drops below 35%, the form is too long or confusing. This is the most actionable metric — a single field removal or reorder can move it 10–15 points.
-
-### 2. Average tools entered per audit
-`sum(tools_per_audit) / audits_completed`
-
-Target: ≥3.5 tools/audit. If users are only entering 1–2 tools, either they're not the right persona, or the form doesn't make it obvious they should enter all their tools. This also affects recommendation quality — a 1-tool audit rarely surfaces meaningful savings.
-
-### 3. Landing page → audit start rate
-`audits_started / landing_page_visits`
-
-Target: ≥30%. If this is low, the headline/CTA isn't landing with the right persona. This metric detects distribution mismatch — we're reaching people who aren't the target user, or the value prop isn't immediately clear.
+| Stage | Metric | Target (Month 1) | Target (Month 3) |
+|---|---|---|---|
+| Awareness | Unique visitors to landing page | 500/week | 2,000/week |
+| Activation | Audit completion rate (visitor → results) | 40% | 55% |
+| Value | Median savings found per audit | $280/mo | $280/mo (stable) |
+| Capture | Email capture rate (of completions) | 20% | 30% |
+| Qualify | % of email captures with savings > $500/mo | 25% | 25% (stable) |
+| Convert | Credex inquiry rate (of qualified leads) | 8% | 10% |
+| Revenue | New Credex ARR attributed to StackAudit | $24k/mo | $96k/mo |
 
 ---
 
-## What to Instrument First
+## Product health metrics
 
-In priority order (all tracked in the `audit_events` Supabase table from Day 1):
+### Audit quality
+- **Mean savings per audit** — proxy for whether the engine is finding real opportunities (should be $150–$400 for a typical 3-tool team)
+- **% audits returning isAlreadyOptimal** — if this is >60%, the engine rules may be too lenient; if <10%, they may be too aggressive
+- **Top recommendation action distribution** — expect ~40% downgrade, ~30% switch_vendor, ~20% consolidate, ~10% keep. Major deviation signals a pricing data issue.
 
-1. `audit_started` — form first interaction (captures drop-off before completion)
-2. `audit_completed` — results page rendered with real data
-3. `email_captured` — lead form submitted
-4. `share_clicked` — share button clicked (viral loop signal)
-5. `consult_clicked` — Credex CTA clicked (high-value conversion)
-6. `pdf_downloaded` — bonus feature engagement
-7. `landing_page_view` — with referrer to track channel performance
+### Engagement
+- **Share link clicked / audit completed** — target >15%. Low share rate means the results aren't surprising enough to share.
+- **Return visits to share page** — proxy for how often managers are sending the link to their CEO/CFO
 
-These 7 events give a complete funnel view with no third-party analytics tool required (Supabase query is sufficient at early stage).
+### Performance
+- **Audit API p95 latency** — target <500ms (engine is synchronous; this should be easy)
+- **Summary API p95 latency** — target <3s (Claude Haiku; non-blocking so less critical)
+- **Email delivery rate** — target >98% (Resend SLA)
 
 ---
 
-## Pivot Trigger
+## Acquisition metrics
 
-**If form completion rate < 25% after 500 audit starts AND average tools entered < 2.5:**
+| Channel | Metric | Target |
+|---|---|---|
+| Organic / SEO | Weekly organic sessions | 200 by Month 2 |
+| HN / community | Audits completed in first 48h post-launch | >50 |
+| Credex email blast | Email open rate | >35% (warm list) |
+| Share mechanic | % of audits that generate a share link click | >15% |
+| LinkedIn outbound | Reply rate | >8% |
 
-The form is too friction-heavy OR the wrong persona is landing. Action: cut the tool list to 5 tools (most common), remove the "primary use case" field, re-test. If completion rate doesn't recover to ≥35% within the next 200 starts, consider a simpler "single tool benchmark" mode as the primary flow.
+---
 
-**If email capture rate < 20% after 200 completed audits:**
+## Quality guardrails (things to watch for problems)
 
-The audit results aren't delivering enough perceived value to justify an email. Action: add more specificity to recommendations (show the math inline), add social proof above the email gate, test removing the gate entirely and replacing with a passive newsletter signup.
+| Signal | Threshold | Response |
+|---|---|---|
+| Audit completion rate drops | <30% | Check for JS errors, form UX issues |
+| Email capture rate drops | <15% | A/B test email form placement/copy |
+| Credex CTA click rate drops | <5% of eligible users | Review CTA copy and threshold logic |
+| API error rate rises | >1% | Page on-call; check Supabase / rate limiter |
+| Savings number complaints in email/Slack | Any | Audit the pricing data; recheck sourceUrls |
 
-**If share rate < 5% after 100 completed audits:**
+---
 
-The share card design isn't compelling. Action: redesign the OG image to show the savings number more prominently (large font, brand color), A/B test the share button copy.
+## Weekly review cadence (once live)
+
+Every Monday, review:
+1. **Audits completed last 7 days** — is the funnel growing?
+2. **Email captures and Credex CTA shows** — is lead quality stable?
+3. **Any new pricing changes from vendors?** — Cursor, OpenAI, Anthropic update pricing quarterly; we need to catch this before it invalidates recommendations
+
+---
+
+## Definition of success at Day 7 (submission)
+
+For this internship project specifically, success means:
+- [ ] The audit engine runs end-to-end without errors in the live app
+- [ ] At least 3 real audits completed by real people (not test data)
+- [ ] At least 1 Credex-qualified lead (savings > $500/mo + email captured) in Supabase
+- [ ] All 24 engine tests passing
+- [ ] Lighthouse Performance ≥ 85, Accessibility ≥ 90
+- [ ] All required markdown files present with real content (not stubs)

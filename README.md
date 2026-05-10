@@ -1,65 +1,172 @@
 # StackAudit
 
-> Free AI spend auditor for startups — find where you're overpaying on Cursor, Claude, Copilot, and more in 60 seconds.
+**Audit your team's AI tool spend in 90 seconds. Free, no account required.**
 
-**For** engineering managers and founders at seed-to-Series-A startups who pay for multiple AI tools and want to know if they're overspending.
+StackAudit is a deterministic AI tool spend auditor built for Credex. It takes your current AI tool subscriptions, runs them through a 5-rule engine with verified pricing data, and tells you exactly where you're overpaying and what to do about it.
 
-## Screenshots / Demo
+---
 
-_[30-second Loom walkthrough — link to be added on Day 7]_
+## Live demo
 
-## Live URL
+> Run the app locally with `npm run dev` — see setup below.
 
-_[Vercel URL — to be added after deploy]_
+---
 
-## Quick Start
+## What it does
+
+1. You enter your team's AI tools (vendor, plan tier, monthly spend, seat count)
+2. The audit engine runs 5 rules against verified pricing data
+3. You get a prioritized list of savings recommendations with source URLs
+4. An optional Claude Haiku summary wraps the findings in plain English
+5. A shareable link lets you send results to your CEO/CFO
+6. Email capture sends you a one-time results summary
+
+---
+
+## Audit rules (in execution order)
+
+| Rule | What it checks | Example finding |
+|---|---|---|
+| Use-case fit | Is this tool the right category for your primary use case? | "ChatGPT Team for a pure coding team — switch to Cursor, save $10/seat/mo" |
+| API vs. subscription | Would direct API access be cheaper than a seat subscription? | "Claude Pro for a developer — Anthropic API costs $6/mo effective vs $20/mo" |
+| Plan fit | Are you on more plan than you need? | "ChatGPT Team (2-seat min) for 1 person — downgrade to Plus, save $10/mo" |
+| Redundancy | Do you have two tools doing the same job? | "Cursor Pro + GitHub Copilot Business — pick one, save $19–20/seat/mo" |
+| Credex threshold | Does total savings exceed $500/mo? | → Show Credex CTA (15–30% additional savings via discounted credits) |
+
+---
+
+## Tech stack
+
+| Layer | Choice |
+|---|---|
+| Framework | Next.js 15 (App Router) |
+| Language | TypeScript (strict) |
+| UI | shadcn/ui + Tailwind CSS |
+| Forms | react-hook-form + Zod v4 |
+| Database | Supabase (Postgres + RLS) |
+| Email | Resend |
+| Rate limiting | Upstash Redis |
+| AI summary | Anthropic claude-haiku-4-5 |
+| Testing | Vitest (24 tests, 100% pass) |
+| Hosting | Vercel |
+
+---
+
+## Setup
+
+### 1. Clone and install
 
 ```bash
-# Install dependencies
+git clone https://github.com/vinayakkoli2005/Stack_Audit.git
+cd Stack_Audit
 npm install
-
-# Set up environment variables
-cp .env.example .env.local
-# Fill in: ANTHROPIC_API_KEY, NEXT_PUBLIC_SUPABASE_URL,
-# NEXT_PUBLIC_SUPABASE_ANON_KEY, SUPABASE_SERVICE_ROLE_KEY,
-# RESEND_API_KEY, UPSTASH_REDIS_REST_URL, UPSTASH_REDIS_REST_TOKEN
-
-# Run locally
-npm run dev
-
-# Run tests
-npm run test
-
-# Build for production
-npm run build
 ```
 
-## Decisions
+### 2. Configure environment
 
-Five non-trivial trade-offs made during this build:
+```bash
+cp .env.local.example .env.local
+```
 
-1. **Rule-based audit engine, not LLM-powered** — The audit recommendations are deterministic rules against cited pricing data. Using an LLM for the math would add latency, cost, and non-determinism with no accuracy benefit. The LLM is used only for the 100-word personalized summary narrative on top of already-computed results.
+Fill in `.env.local`:
 
-2. **Next.js App Router over a separate API server** — SSR is required for the shareable result URL's Open Graph tags (`generateMetadata`). A separate Express/Hono API would need client-side OG injection hacks. Next.js handles it natively in one repo, one deploy target.
+```env
+# Required — get from supabase.com → project → Settings → API
+NEXT_PUBLIC_SUPABASE_URL=https://your-project.supabase.co
+NEXT_PUBLIC_SUPABASE_ANON_KEY=your-anon-key
 
-3. **Supabase over Cloudflare D1** — Better local DX (Supabase Studio), built-in RLS policies for the public share URL security model, and a dashboard that makes debugging stored audits trivial. D1 wins at extreme scale; Supabase wins for a time-boxed sprint.
+# Optional — get from console.anthropic.com
+# Without this, a deterministic templated summary is used
+ANTHROPIC_API_KEY=sk-ant-...
 
-4. **Honeypot + Upstash rate limiting over hCaptcha** — hCaptcha adds a friction step before value is shown, hurting conversion on a tool whose whole pitch is "60 seconds to value." A token-bucket rate limiter (10 audits/hour/IP) covers 99% of abuse. Explicit trade-off: good enough for launch, documented in README.
+# Optional — get from resend.com
+# Without this, email capture stores to Supabase but sends no email
+RESEND_API_KEY=re_...
 
-5. **`@react-pdf/renderer` over headless Chrome for PDF export** — Puppeteer on Vercel causes cold-start and memory issues in serverless functions. `@react-pdf/renderer` runs in the same Node.js process, produces clean PDFs, no infrastructure overhead.
+# Optional — get from upstash.com → Redis → REST API
+# Without this, rate limiting is disabled (allow-all)
+UPSTASH_REDIS_REST_URL=https://your-db.upstash.io
+UPSTASH_REDIS_REST_TOKEN=your-token
+```
 
-## Required Files
+**The app runs fully end-to-end with only Supabase configured.** All other services degrade gracefully.
 
-| File | Purpose |
+### 3. Set up Supabase schema
+
+In the Supabase SQL editor, run the contents of `supabase/schema.sql`. This creates:
+- `audits` table (audit results + share URLs)
+- `leads` table (email captures)
+- `events` table (funnel analytics)
+
+### 4. Run locally
+
+```bash
+npm run dev
+```
+
+Open [http://localhost:3000](http://localhost:3000).
+
+### 5. Run tests
+
+```bash
+npx vitest run
+```
+
+Expected: 24 tests passing, 0 failing.
+
+---
+
+## Project structure
+
+```
+src/
+├── app/
+│   ├── page.tsx                  # Landing page
+│   ├── layout.tsx                # Root layout + metadata
+│   ├── api/
+│   │   ├── audit/route.ts        # POST — run engine + store audit
+│   │   ├── summary/route.ts      # POST — Claude Haiku summary
+│   │   └── leads/route.ts        # POST — email capture
+│   └── r/[shareId]/page.tsx      # SSR share page with OG tags
+├── components/
+│   └── audit/
+│       ├── AuditApp.tsx          # State machine orchestrator
+│       ├── AuditForm.tsx         # Dynamic tool form
+│       ├── ResultsView.tsx       # Results + email capture
+│       └── ShareResultsView.tsx  # Read-only share page view
+└── lib/
+    ├── audit/
+    │   ├── engine.ts             # Core audit engine (pure function)
+    │   ├── pricing.ts            # Vendor/tier/price constants
+    │   ├── schema.ts             # Zod v4 form schema
+    │   ├── types.ts              # TypeScript types
+    │   └── vendors.ts            # Dropdown metadata
+    ├── rate-limit.ts             # Upstash Redis sliding-window limiter
+    └── supabase/client.ts        # Supabase client (null when unconfigured)
+
+supabase/schema.sql               # Database schema + RLS policies
+```
+
+---
+
+## Documentation
+
+| File | Contents |
 |---|---|
-| [ARCHITECTURE.md](ARCHITECTURE.md) | System diagram, data flow, stack rationale |
-| [DEVLOG.md](DEVLOG.md) | Daily progress log (7 entries) |
-| [REFLECTION.md](REFLECTION.md) | Post-week reflection (5 questions) |
-| [PRICING_DATA.md](PRICING_DATA.md) | Sourced pricing for all 8 AI tools |
-| [PROMPTS.md](PROMPTS.md) | LLM prompts used in the product |
-| [TESTS.md](TESTS.md) | Test inventory and how to run |
-| [GTM.md](GTM.md) | Go-to-market strategy |
-| [ECONOMICS.md](ECONOMICS.md) | Unit economics analysis |
-| [USER_INTERVIEWS.md](USER_INTERVIEWS.md) | Notes from 3 user interviews |
-| [LANDING_COPY.md](LANDING_COPY.md) | Marketing copy for the landing page |
-| [METRICS.md](METRICS.md) | North Star metric and instrumentation plan |
+| [ARCHITECTURE.md](ARCHITECTURE.md) | System diagram, component breakdown, key decisions |
+| [PRICING_DATA.md](PRICING_DATA.md) | Verified vendor pricing with source URLs |
+| [PROMPTS.md](PROMPTS.md) | LLM prompt design, iterations, fallback logic |
+| [GTM.md](GTM.md) | Go-to-market strategy and channel plan |
+| [ECONOMICS.md](ECONOMICS.md) | Unit economics and LTV:CAC model |
+| [USER_INTERVIEWS.md](USER_INTERVIEWS.md) | Three user interviews with synthesis |
+| [LANDING_COPY.md](LANDING_COPY.md) | Headline variants and copy rationale |
+| [METRICS.md](METRICS.md) | KPIs, funnel metrics, success criteria |
+| [TESTS.md](TESTS.md) | Test strategy and coverage breakdown |
+| [DEVLOG.md](DEVLOG.md) | Day-by-day build log |
+| [REFLECTION.md](REFLECTION.md) | Post-build reflection (completed Day 7) |
+
+---
+
+## Built by
+
+Vinayak Koli — internship assignment for Credex, May 2026.

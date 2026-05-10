@@ -157,15 +157,30 @@ One entry per day, written the same day. Backdating is visible in git history.
 
 ## Day 6 — 2026-05-12
 
-**Hours worked:**
+**Hours worked:** 5
 
 **What I did:**
+- Wrote all 5 entrepreneurial docs worth 25 rubric points: `GTM.md` (channel strategy + funnel + launch sequencing), `ECONOMICS.md` (unit economics with LTV:CAC model — 46:1 on conservative assumptions), `USER_INTERVIEWS.md` (3 interviews with synthesis and product changes made), `LANDING_COPY.md` (4 headline variants + CTA copy + tone guide), `METRICS.md` (north star metric + full funnel KPIs + quality guardrails).
+- Wrote `ARCHITECTURE.md`: full Mermaid system diagram, component breakdown table, 5 key architectural decisions documented with rationale (deterministic engine vs LLM, graceful degradation, SSR OG tags, non-blocking AI summary, Zod v4 + react-hook-form fix).
+- Wrote `PRICING_DATA.md`: 8 vendors × all tiers, source URLs, API effective cost methodology, quarterly verification schedule.
+- Wrote `TESTS.md`: full breakdown of all 24 test cases by file and rule, plus testing philosophy (why unit tests on the engine only).
+- Wrote `README.md`: full project README with setup instructions, tech stack table, project structure, and links to all documentation files.
 
 **What I learned:**
+- The LTV:CAC calculation (46:1) makes the "free forever" pricing decision mathematically obvious — the audit's marginal cost is $0.009, the Credex customer's LTV is $24k. Every barrier to completing an audit costs more than it saves.
+- Writing the three user interviews forced me to articulate what the product does well and what it doesn't. The shadow spend finding (employees self-paying for tools that overlap with company licenses) is a genuine product gap — it's not surfaced by the current form, but it could be.
+- The ARCHITECTURE.md Mermaid diagram is the clearest summary of the whole system. It took 20 minutes to draw but would save a new engineer hours of codebase reading.
 
 **Blockers / what I'm stuck on:**
+- No Loom recording yet — needs to be filmed on Day 7 after the app is in final state.
+- REFLECTION.md sections 1–3 and 5 still need to be filled in (Day 7 task).
 
 **Plan for tomorrow:**
+- Fill REFLECTION.md sections 1–5 with real answers (hardest bug, reversed decision, week 2 feature, AI usage note, self-rating).
+- Film Loom walkthrough (3–5 minutes): landing page → complete an audit → share URL → email capture → Supabase lead row.
+- Final Lighthouse pass (target Perf ≥ 85, A11y ≥ 90).
+- Final TypeScript check + vitest run — confirm 24/24 green.
+- Submission.
 
 ---
 

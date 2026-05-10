@@ -1,69 +1,113 @@
-# GTM.md
+# GTM.md — Go-To-Market Strategy
 
-## Target User
+## Product in one sentence
 
-Not "startups." The exact person:
+StackAudit tells a software team, in 90 seconds and for free, exactly how much they're overpaying for AI tools and what to do about it — then hands the hottest leads to Credex.
 
-**Engineering Manager or CTO at a 8–40 person seed-to-Series-A SaaS startup in the US or EU.**
+---
 
-More specifically: they joined in the last 18 months as the team scaled from 3 to 15+ engineers. They inherited a tooling budget that accumulated organically — someone added Copilot when it launched, someone else expensed Claude Pro, the founding team already had Cursor. Now they're doing their first real budget review and they have no benchmark for what "normal" AI spend looks like.
+## Target customer
 
-Secondary persona: **a solo technical founder** running a bootstrapped product with 2–5 contractors, who personally pays the bills and feels the $200–$400/mo AI tab but hasn't audited it.
+**Primary:** Engineering managers and CTOs at seed-to-Series B startups (10–150 employees) who adopted 3–5 AI tools fast, on separate credit cards, and have never audited the overlap.
 
-## What They Google Right Before They'd Want This
+**Why this segment:**
+- Budget authority is concentrated in one or two people — no procurement committee to navigate
+- Moved fast during the AI tooling boom of 2023–2025; likely have redundant seat licenses
+- Pain is real and immediate: the tools are on the P&L, the CFO is starting to ask questions
+- Small enough that a free self-serve audit replaces what a consultant would charge $5–10k for
 
-- "github copilot vs cursor 2026 which is better"
-- "cursor business plan worth it small team"
-- "how much do startups spend on ai tools"
-- "claude pro vs chatgpt plus for developers"
-- "ai tools for startup engineering team budget"
-- "reduce saas spend startup"
+**Secondary (Month 3+):** Finance and ops leads at 150–500 person companies where the AI stack has grown across departments without central visibility. Longer sales cycle, but the audit report becomes a procurement artifact that travels up the org.
 
-They're not googling "AI spend audit" — that category doesn't exist yet. They're searching for point comparisons between tools, or they just got a Ramp/Brex monthly summary email and clicked through to the AI line items.
+---
 
-## Where They Hang Out Online
+## Channels (ranked by CAC and time-to-first-user)
 
-**Specific communities (not generic):**
+### 1. Organic / SEO — zero cost, Day 1
+Target long-tail queries with purchase intent:
+- "is cursor worth it for small teams"
+- "chatgpt team vs anthropic api cost comparison"
+- "github copilot vs cursor which is cheaper"
+- "ai tool stack audit"
 
-- **r/ExperiencedDevs** — senior eng discussions, frequently touches tooling
-- **r/SaaS** — founder-heavy, cost-consciousness is endemic here
-- **Indie Hackers Slack** — #tools and #revenue channels specifically
-- **Lenny's Newsletter community Slack** — product/eng leaders, $X/yr subscribers, trust product recommendations
-- **YC's Hacker News** — Show HN posts get read by exactly this persona
-- **"Founder Mode" Discord** — ~8k technical founders, very active #tools channel
-- **X/Twitter "DevTools founders" list** — curated by @swyx, followed by tooling-aware EMs
+The audit tool itself is the content. Every share page at `/r/[shareId]` is publicly indexed with real savings numbers in the OG title ("I found $640/mo in savings"). Each shared result is a backlink and a social proof impression.
 
-## First 100 Users in 30 Days, $0 Paid Budget
+### 2. Developer communities — Week 1–2, sweat equity
+- Show HN post: "I built a free tool that audits your team's AI tool spend in 90 seconds"
+- Indie Hackers: post the honest builder story with real numbers
+- r/SaaS and r/ExperiencedDevs: frame as a cost-optimization resource
 
-**Day 1–3: The case study hook**
-Write a public audit of a well-known startup's *estimated* AI tool stack (using only publicly stated info — job postings, Twitter, blog posts). "We estimated what Vercel's eng team spends on AI tools — here's what we found." Post to HN as Show HN + Twitter thread. This is controversy + concrete numbers: HN catnip. Target: 1 HN front page hit = 3,000–8,000 visits.
+The story IS the product demo. Even 50 HN upvotes drives thousands of audits from the exact target audience.
 
-**Day 3–7: Community drops**
-Personal posts (not spam) in Indie Hackers, r/SaaS, r/ExperiencedDevs: "I built a free tool to audit your AI tool spend after our team's Ramp statement showed $800/mo. Here's what it found for us." First-person, specific numbers, invite feedback. Target: 3 posts × 50–200 upvotes = 500–1,000 visits.
+### 3. Credex existing customer base — Week 2, highest conversion
+Credex already has relationships with companies buying AI credits. Email existing customers:
+> "We built a free audit tool — run it in 90 seconds and see where you could save more."
 
-**Day 7–14: Newsletter outreach (the leverage play)**
-Email 20 newsletters whose audience is exactly this persona: Pragmatic Engineer (~500k subscribers), Software Lead Weekly, TLDR Tech, Lenny's Newsletter, The Rundown. Pitch: "Free tool your readers can use right now, here are the results we've seen." One placement = 5,000–20,000 visits. This is the highest-ROI channel.
+These users already trust Credex and are already spending on AI tools. Expected conversion to Credex inquiry: 15–25% (vs. ~2% for cold traffic).
 
-**Day 14–30: The audit-as-content loop**
-Every week, publish one "Stack audit: what a [X-person team] doing [use case] should actually spend" post. Each post links to the tool. SEO eventually picks this up; immediate distribution via Twitter + HN.
+### 4. LinkedIn outbound — Month 2
+Sequence targeting EMs and CTOs at 50–200 person startups:
+1. Connection with a relevant benchmark ("teams your size typically spend $X/seat on Cursor")
+2. Personalized note linking to the tool
+3. Follow-up after they audit with specific recommendations
 
-**Ongoing: Referral mechanic**
-"Share your audit results" → unique URL with OG preview showing the savings number. When someone shares "$1,200/year saved on AI tools," that tweet is a distribution channel. Design the share card for this.
+Scalable with 1 SDR at ~$3k/month loaded cost.
 
-## The Unfair Distribution Channel
+### 5. Ecosystem partnerships — Month 3+
+Windsurf, Cursor, and GitHub Copilot all have affiliate/partner programs. Pitch:
+> "We send you warm, pre-qualified teams who are actively evaluating coding tools."
 
-**Credex's existing sales relationships.**
+Revenue share on seat upgrades creates a natural distribution flywheel — the tools benefit from StackAudit recommending them.
 
-Credex is already in conversations with teams that are buying discounted AI credits. Those conversations now have a pre-qualifying tool: "Run this free audit first, see where you're overpaying, then we'll show you how to capture the savings through credits." This is a closed loop — the tool qualifies leads *before* the sales call, making every conversation higher-intent.
+---
 
-No competitor can replicate this because they don't have Credex's inventory relationships. The tool is free and open; the unfair edge is the distribution pipeline it feeds.
+## Funnel
 
-## Week-1 Traction If This Works
+```
+Organic / referral / Credex email
+        ↓
+  Landing page → audit form (no signup required)
+        ↓
+  Audit completes in <2s → results page
+        ↓
+  Email capture ("send me these results")       ← lead collected
+        ↓
+  Credex CTA (shown if savings > $500/mo)       ← high-intent lead
+        ↓
+  Credex sales conversation
+```
 
-- 800–1,200 unique visits
-- 180–250 audits started
-- 90–120 audits completed (50% completion rate target)
-- 35–50 emails captured (35–40% email capture rate post-audit)
-- 6–10 high-savings leads (>$500/mo) flagged for Credex outreach
-- 1 newsletter mention (target: Pragmatic Engineer or TLDR Tech)
-- 3–5 organic Twitter shares of audit result cards
+**Key insight:** The audit is the top-of-funnel AND the qualification step. A user who finds $600/mo in savings and sees the Credex CTA has already sold themselves on the problem. The sales conversation starts from "I know I have waste" — not "do I have waste?"
+
+---
+
+## Launch sequencing
+
+| Week | Action | Goal |
+|------|--------|------|
+| 1 | Show HN + Indie Hackers post | 100 audits completed |
+| 1 | Email Credex existing customers | 20 warm Credex leads |
+| 2 | Share 3 viral audit results on Twitter/LinkedIn | 500 total audits |
+| 3 | LinkedIn outbound to 200 EMs | 10 booked Credex calls |
+| 4 | "State of AI Tool Spend" report from anonymized audit data | Press coverage + SEO |
+| 6 | First ecosystem partnership conversation | Distribution deal signed |
+
+---
+
+## Competitive landscape
+
+| Alternative | Weakness vs. StackAudit |
+|---|---|
+| Torii / Blissfully (SaaS management) | Enterprise-only, $1k+/month, 2-week onboarding |
+| Cledara / Spendflo (SaaS spend) | Not AI-specific, no use-case fit logic |
+| Manual spreadsheet | 3–5 hours of EM time; StackAudit does it in 90 seconds |
+| Asking vendors | Vendors don't tell you to buy less |
+
+No direct competitor does instant, free, personalized AI tool audits. The market is open.
+
+---
+
+## Pricing strategy for StackAudit
+
+**Free forever. No account required.**
+
+Every friction point between a visitor and completing the audit reduces lead quality. No signup = higher completion rate = more Credex leads. The audit compute cost is <$0.01/audit (no Claude key needed for the deterministic engine), making "free forever" economically trivial at any realistic traffic volume.

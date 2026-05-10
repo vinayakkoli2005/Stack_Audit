@@ -1,93 +1,104 @@
-# ECONOMICS.md
+# ECONOMICS.md — Unit Economics
 
-## Unit Economics for Credex
+## Business model
 
-All numbers are estimates with documented assumptions. Approximate numbers > no numbers.
-
----
-
-## What Is a Converted Lead Worth?
-
-A "converted lead" = a team that purchases AI credits through Credex.
-
-**Assumptions:**
-- Average Credex deal: team buys $1,500–$2,000/year in discounted AI credits
-- Using midpoint: **$1,750 ACV (Annual Contract Value)**
-- Credex gross margin on resold credits: ~25–35% (sourced from typical software reseller economics; exact margin undisclosed)
-- Using conservative 25%: **$437.50 gross profit per customer/year**
-- Average customer lifespan: 2 years (switching costs are low, but satisfied customers re-order)
-- **LTV = $875 per customer**
+StackAudit is a free lead-generation tool for Credex. Revenue comes entirely from Credex sales conversions, not from the audit product itself. This document models the unit economics of the funnel end-to-end.
 
 ---
 
-## CAC by Channel
+## Cost to run one audit
 
-| Channel | Estimated CAC | Basis |
+| Component | Cost per audit | Notes |
 |---|---|---|
-| Organic HN / Twitter | ~$0 direct | Time cost only (~3 hrs/post × $50/hr opportunity cost = $150, amortized over 500+ leads = ~$0.30) |
-| Newsletter placement | ~$1–3/lead | Typical B2B newsletter CPL at this audience size |
-| Community drops (IH, Reddit) | ~$0.50/lead | Time cost amortized over ~200 leads per post |
-| Referral (share mechanic) | ~$0.10/lead | Near-zero marginal cost once built |
-| Paid social (not Day-1 channel) | $15–40/lead | Industry benchmark for B2B SaaS at this stage |
+| Next.js serverless function | ~$0.0001 | Vercel Hobby: 100k free invocations/month |
+| Supabase write (1 row) | ~$0.000005 | Well within free tier (500MB storage) |
+| Claude Haiku summary | $0.008 | 600 input tokens × $0.80/MTok + 120 output × $4/MTok — only when API key present |
+| Resend email | $0.001 | Free tier: 3,000 emails/month |
+| Upstash Redis | ~$0.00002 | Free tier: 10k commands/day |
+| **Total (with Claude)** | **~$0.009** | ~$9 per 1,000 audits |
+| **Total (without Claude)** | **~$0.001** | Templated fallback — near-zero |
 
-**Blended organic CAC (first 6 months):** ~$2–5 per audit completed
-**Blended organic CAC to customer:** ~$40–80 (assuming 5% audit→customer conversion, see below)
+At 10,000 audits/month with Claude enabled: ~$90/month infrastructure cost.
 
 ---
 
-## Conversion Funnel
+## Revenue model via Credex
 
-| Stage | Rate | Basis |
+### Assumptions (conservative)
+
+| Metric | Value | Basis |
 |---|---|---|
-| Visit → audit started | 35% | Typical free tool conversion; no login friction helps |
-| Audit started → audit completed | 55% | Form has ~12 fields; shorter = higher completion |
-| Audit completed → email captured | 40% | Post-value gate; comparable to lead-gen tools |
-| Email captured → consult booked | 8% | High-intent only (savings > $500/mo); Calendly link |
-| Consult booked → credit purchase | 30% | Credex has existing relationships; not cold outreach |
+| Monthly audits | 1,000 | Realistic for a new tool post-HN launch |
+| Email capture rate | 25% | Form is low-friction, results are high-value |
+| Credex CTA shown (savings > $500/mo) | 30% of audits | Based on engine rule: teams spending on 3+ tools commonly exceed threshold |
+| CTA → Credex inquiry conversion | 8% | Conservative; user already quantified the pain |
+| Credex inquiry → closed deal | 25% | Typical SMB SaaS sales close rate |
+| Average Credex ACV | $8,000/year | Midpoint for 10–50 seat team buying $667/month in AI credits |
 
-**End-to-end: visit → customer ≈ 0.6%**
+### Monthly revenue calculation
 
-For every 1,000 visitors: 350 start, 193 complete, 77 emails, 6 consults booked, 2 customers.
+```
+1,000 audits/month
+  × 30% shown Credex CTA      = 300 high-intent users
+  × 8% inquiry conversion     = 24 Credex inquiries
+  × 25% close rate            = 6 new Credex customers/month
+  × $8,000 ACV                = $48,000 ARR added/month
+```
 
----
+At steady state (Month 6): **$48,000 ARR added per month** from StackAudit-sourced leads.
 
-## What Makes This Profitable
+### Customer acquisition cost (CAC)
 
-At $875 LTV and $60 blended CAC-to-customer:
-- **LTV:CAC = ~14.6x** — excellent for a B2B tool
-- Payback period: < 1 month (credits purchased upfront)
+| Cost item | Monthly |
+|---|---|
+| Infrastructure (10k audits) | $90 |
+| SDR (0.5 FTE for LinkedIn outbound) | $2,500 |
+| Content / distribution | $500 |
+| **Total marketing cost** | **$3,090/month** |
 
-The tool itself costs ~$50–100/month to run at moderate traffic (Supabase free tier + Vercel hobby + Resend free tier + ~$5–10 Anthropic API for summaries). Effectively free.
+```
+CAC = $3,090 / 6 new customers = $515 per Credex customer
+LTV = $8,000 ACV × 3 year avg retention = $24,000
+LTV:CAC = 46:1
+```
 
----
-
-## $1M ARR in 18 Months — What Would Have to Be True
-
-**Target:** $1M ARR = ~571 customers at $1,750 ACV
-
-**Math:**
-- Months 1–6: Build distribution. Target 100 customers. Requires ~17k visitors, ~100 emails/month, ~8 customers/month closing.
-- Months 7–12: Scale distribution (1 newsletter deal, referral loop running). Target 300 total customers. Requires ~50k visitors/month by month 10.
-- Months 13–18: Paid channel profitable. Target 571 total customers.
-
-**What must be true:**
-1. At least one high-distribution newsletter placement (Pragmatic Engineer or equivalent) in month 1–2. One placement can drive 2,000–5,000 audits in a week.
-2. The referral/share mechanic drives a K-factor > 0.3 (each customer refers 0.3 more via share link).
-3. Credex closes ≥30% of booked consultations (requires a good sales motion, not just a great tool).
-4. Pricing holds: Credex can sustain 25%+ margin on credits (inventory supply risk).
-
-**The single biggest assumption:** This tool converts *existing Credex conversations* into faster closes. If Credex is already talking to 50 teams/month about credits, and 30% of those use the audit first, that's 15 warmer leads/month without any new marketing — worth ~$2,600/mo gross profit from month 1.
+**LTV:CAC of 46:1 is exceptional.** SaaS benchmark is 3:1 to 5:1. The reason: StackAudit does the qualification work automatically — Credex salespeople only talk to prospects who have already proven they have AI tool spend waste.
 
 ---
 
-## Sensitivity Analysis
+## Sensitivity analysis
 
-| Variable | Base case | Downside | Upside |
+| Monthly audits | Close rate | New Credex customers/mo | ARR added/mo |
 |---|---|---|---|
-| Email capture rate | 40% | 20% | 60% |
-| Consult → purchase | 30% | 15% | 45% |
-| Monthly visitors (month 6) | 10,000 | 3,000 | 30,000 |
-| Customers by month 18 | 571 | 120 | 1,400 |
-| ARR by month 18 | $1M | $210K | $2.45M |
+| 500 | 25% | 3 | $24k |
+| 1,000 | 25% | 6 | $48k |
+| 5,000 | 25% | 30 | $240k |
+| 1,000 | 15% | 3.6 | $29k |
+| 1,000 | 40% | 9.6 | $77k |
 
-Downside is still a real business. Upside requires one viral moment (HN front page + newsletter). The tool structure (shareable OG result cards) is designed to create that moment.
+Even in the pessimistic scenario (500 audits, 15% close rate): **$14k ARR/month** from a tool that costs $90/month to run.
+
+---
+
+## Break-even
+
+StackAudit reaches break-even on its own infrastructure + SDR cost in Month 1 if it closes even 1 Credex deal ($8k ACV > $3,090 monthly cost). Everything after that is margin.
+
+---
+
+## Why "free forever" makes economic sense
+
+The marginal cost of one more audit is ~$0.009. The marginal revenue of one more Credex customer is $8,000. The optimal strategy is to remove every barrier to completing an audit and maximize the top of the funnel — not to charge for the audit itself.
+
+Charging for audits (even $9/month) would reduce conversion by an estimated 80% (typical free-to-paid conversion friction). The math strongly favors free.
+
+---
+
+## Risks and mitigations
+
+| Risk | Mitigation |
+|---|---|
+| Audit completion rate drops below 20% | A/B test landing page copy; reduce form to 3 fields for a "quick audit" mode |
+| Credex close rate declines | Better lead qualification via email capture questions ("how many seats?") |
+| Infrastructure costs spike (viral traffic) | Vercel autoscaling; Supabase free tier handles 500MB — well above 10k audits |
+| Vendors change pricing faster than we update | Source URLs in every recommendation; quarterly pricing refresh in `pricing.ts` |
