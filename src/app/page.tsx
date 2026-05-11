@@ -1,4 +1,5 @@
 import { AuditApp } from "@/components/audit/AuditApp";
+import { SavingsCounter } from "@/components/audit/SavingsCounter";
 
 export default function Home() {
   return (
@@ -32,6 +33,8 @@ export default function Home() {
             <span>✓ No login required</span>
             <span>✓ Deterministic rules, not AI guesses</span>
           </div>
+          {/* Live aggregate counter — server component, revalidates every 60s */}
+          <SavingsCounter />
         </div>
 
         {/* Form / Results */}

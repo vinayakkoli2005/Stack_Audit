@@ -8,7 +8,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { ExternalLink, ArrowRight, TrendingDown, RefreshCw, Package } from "lucide-react";
+import { ExternalLink, ArrowRight, TrendingDown, RefreshCw, Package, Mail } from "lucide-react";
 
 const ACTION_LABELS: Record<string, string> = {
   keep:           "Keep",
@@ -295,6 +295,32 @@ export function ResultsView({ result, onStartOver, shareId, summary }: ResultsVi
           {shareId ? "Copy share link" : "Share results"}
         </Button>
       </div>
+
+      {/* "Explain to my CEO" mailto button — only shown when there are real savings */}
+      {!isAlreadyOptimal && totalMonthlySavings > 0 && (
+        <Button
+          variant="ghost"
+          className="w-full text-muted-foreground hover:text-foreground"
+          onClick={() => {
+            const shareUrl = shareId
+              ? `${window.location.origin}/r/${shareId}`
+              : window.location.href;
+            const top3 = recommendations.slice(0, 3)
+              .map((r, i) => `${i + 1}. ${VENDOR_LABELS[r.vendor]}: ${r.reasonShort} (saves $${r.monthlySavings}/mo)`)
+              .join("\n");
+            const subject = encodeURIComponent(
+              `AI tool audit: found $${totalMonthlySavings}/mo in potential savings`
+            );
+            const body = encodeURIComponent(
+              `Hi,\n\nI ran our AI tool stack through StackAudit and found $${totalMonthlySavings}/month ($${totalAnnualSavings}/year) in potential savings.\n\nTop findings:\n${top3}\n\nFull report: ${shareUrl}\n\nWorth a 15-minute conversation to decide which to act on.`
+            );
+            window.location.href = `mailto:?subject=${subject}&body=${body}`;
+          }}
+        >
+          <Mail className="h-4 w-4 mr-2" />
+          Explain this to my CEO
+        </Button>
+      )}
 
       {/* Methodology note */}
       <p className="text-xs text-muted-foreground text-center leading-relaxed">
