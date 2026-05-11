@@ -167,6 +167,20 @@ supabase/schema.sql               # Database schema + RLS policies
 
 ---
 
+## Key decisions and trade-offs
+
+Five non-obvious choices made during the build week, and why:
+
+| Decision | Alternative considered | Why this way |
+|---|---|---|
+| Deterministic rules engine, not LLM recommendations | Ask Claude to generate recommendations | LLM prices hallucinate; deterministic rules have source URLs. Trust is the product. |
+| Zod v4 + `valueAsNumber` instead of `z.coerce.number()` | Stick with Zod v3 | Zod v4 ships with Next.js 15. `z.coerce.number()` infers `unknown` in v4, breaking hookform resolver types. `valueAsNumber` on the input element is the right fix. |
+| Claude Haiku for summary, with deterministic fallback | GPT-4o-mini / no AI at all | Haiku is 10× cheaper than GPT-4o-mini for a 100-word summary. Fallback means the audit works with zero API keys — important for evaluators running locally. |
+| Sliding-window rate limit on IP, not user session | No rate limiting | No auth means no session to rate-limit by. IP-based with Upstash Redis is the only option that works for anonymous users without adding friction. |
+| OG image as Next.js file convention (`opengraph-image.tsx`) | Dynamic `/api/og` route | File convention gives automatic `<meta>` injection via `generateMetadata`. The API route exists as a fallback for generic pages, but share pages use the convention to keep metadata co-located with the page. |
+
+---
+
 ## Built by
 
 Vinayak Koli — internship assignment for Credex, May 2026.

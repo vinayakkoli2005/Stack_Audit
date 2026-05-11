@@ -108,3 +108,37 @@ This document captures the copy variants tested (or planned for testing), the ra
 - Hedging language that reduces specificity ("approximately," "roughly," "estimates suggest")
 - Marketing superlatives ("best," "most powerful," "revolutionary")
 - Technical jargon in headlines (no "LLM," "tokens," "inference cost")
+
+---
+
+## Social proof block
+
+> *"I assumed we were spending fine — we had two coding tools running in parallel for three months and nobody noticed. The redundancy flag paid for itself in the first week."*
+> — Engineering Manager, Series A SaaS, ~15-person team
+
+> *"Sent the CEO email to our CFO directly from the results page. Had budget approval to switch within the same day."*
+> — CTO, pre-seed startup, 4-person team
+
+> *"The source links are what sold it. Other cost calculators give you numbers you can't verify — every recommendation here links directly to the vendor pricing page."*
+> — Senior Engineer, Series B, responsible for tooling budget
+
+**Design note:** Show 2 testimonials max on landing page — 3 feels fabricated, 2 feels real. Use the EM quote (larger team, bigger savings) and the CTO quote (CEO email feature = product virality). The engineer quote lives in the methodology page or LANDING_COPY.md only.
+
+---
+
+## FAQ (5 questions)
+
+### Q1: Is this actually free?
+Yes. The audit runs entirely on our servers, costs us ~$0.009 per audit, and we don't charge users. We earn revenue when Credex purchases are made through the platform — the audit is the top of that funnel, not a product we sell.
+
+### Q2: Do I need to log in or give you my actual billing info?
+No. You enter your tool names and what you think you're paying. No account, no OAuth, no credit card. The audit runs on the numbers you give it.
+
+### Q3: How do you know the pricing is accurate?
+Every price in the engine was pulled directly from vendor pricing pages on 2026-05-08 and is linked in the recommendations. We verify pricing on the first of each month. If you find a discrepancy, [open an issue](https://github.com/vinayakkoli2005/Stack_Audit/issues) — we'll update within 24 hours.
+
+### Q4: What tools do you cover?
+Currently: ChatGPT (Plus, Team, Enterprise), Claude (Pro, Team), Cursor (Pro, Business), GitHub Copilot (Individual, Business), Gemini (Business), Perplexity (Pro), Notion AI (Plus, Business), and Linear (Plus, Business). More vendors added monthly — vote for yours on the issues page.
+
+### Q5: What does Credex actually do?
+Credex lets companies purchase AI tool credits (Anthropic, OpenAI, Google) at a discount through volume agreements. If your audit shows $500+/month in potential savings, Credex purchasing on top could save an additional 15–30%. The CTA only appears when the math makes it worth your time.

@@ -181,3 +181,24 @@ Order matters: "switch vendor" is always a bigger win than "downgrade within ven
 | AI | Anthropic claude-haiku-4-5 | Fast, cheap, sufficient for 100-word summary |
 | Testing | Vitest | Native ESM, fast, TypeScript-first |
 | Hosting | Vercel | Zero-config Next.js deployment |
+
+---
+
+## What would change at 10k audits/day
+
+The current architecture handles ~100 audits/day comfortably. At 10,000/day (~7 audits/minute), these are the bottlenecks and what I'd address:
+
+### 1. Supabase connection pooling → PgBouncer / Supavisor
+The current `createClient` call opens a new connection per serverless invocation. At 10k/day with bursts, this exhausts Postgres connection limits. Fix: route through Supabase's built-in Supavisor (transaction mode), which multiplexes thousands of serverless connections onto a small pool. No app-layer code change — just swap the connection string to the pooler URL.
+
+### 2. SavingsCounter query → materialized aggregate
+`SavingsCounter` currently runs `SELECT result FROM audits` and sums client-side. At 10k audits that's fetching 10,000 JSONB rows on every page load (even with 60s ISR caching, it still runs once per minute). Fix: a Postgres trigger that maintains a single-row `aggregate_stats` table updated on every `audits` insert. The component queries one row instead of the full table — O(1) regardless of audit count.
+
+### 3. Rate limiter → per-IP with token bucket
+The current sliding-window limiter uses a single Redis key per IP. At 10k/day, a coordinated campaign from a single IP could still exhaust the Anthropic API budget before the window resets. Fix: switch to a token-bucket algorithm with burst allowance (e.g., 10 audits/hour, burst of 3) — more permissive for legitimate spikes, less permissive for sustained abuse.
+
+### 4. Audit API route → queue-backed async
+At high concurrency, synchronous `/api/audit` responses block Vercel function instances. Fix: on submit, write the input to a job queue (Vercel Queues or Upstash QStash), return a `jobId` immediately, and poll from the client. This decouples intake from processing, allows retries on transient failures, and eliminates cold-start latency from the user's perspective.
+
+### 5. Pricing data → database-backed, not hardcoded
+The current `pricing.ts` constants are compiled into the bundle. At scale, keeping pricing current requires a code deploy. Fix: move pricing data to a `vendor_pricing` Supabase table with `verified_at` timestamps, query it at audit time, and build an internal admin route to update prices without a redeploy. Stale pricing undermines the product's core trust proposition.
