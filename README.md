@@ -8,7 +8,9 @@ StackAudit is a deterministic AI tool spend auditor built for Credex. It takes y
 
 ## Live demo
 
-> Run the app locally with `npm run dev` — see setup below.
+**[https://stack-audit-delta.vercel.app](https://stack-audit-delta.vercel.app)**
+
+> Also runs locally with `npm run dev` — see setup below.
 
 ---
 
