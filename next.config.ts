@@ -1,7 +1,8 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
-  /* config options here */
+  // Suppress hydration warnings from browser extensions (e.g. Grammarly) injecting body attributes
+  reactStrictMode: true,
 };
 
 export default nextConfig;

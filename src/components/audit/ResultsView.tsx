@@ -123,10 +123,14 @@ function EmailCapture({
   auditId,
   monthlySavings,
   showCredexCta,
+  result,
+  summary,
 }: {
   auditId?: string | null;
   monthlySavings: number;
   showCredexCta: boolean;
+  result: AuditResult;
+  summary?: string | null;
 }) {
   const [email, setEmail] = useState("");
   const [honeypot, setHoneypot] = useState("");
@@ -140,7 +144,7 @@ function EmailCapture({
       const res = await fetch("/api/leads", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email, auditId, monthlySavings, showCredexCta, honeypot }),
+        body: JSON.stringify({ email, auditId, monthlySavings, showCredexCta, honeypot, result, summary }),
       });
       setState(res.ok ? "done" : "error");
     } catch {
@@ -259,6 +263,8 @@ export function ResultsView({ result, onStartOver, shareId, summary }: ResultsVi
         auditId={shareId}
         monthlySavings={totalMonthlySavings}
         showCredexCta={showCredexCta}
+        result={result}
+        summary={summary}
       />
 
       {/* Recommendations list */}

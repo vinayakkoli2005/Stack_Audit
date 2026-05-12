@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useForm, useFieldArray, Controller } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Plus, Trash2, ArrowRight } from "lucide-react";
@@ -52,15 +52,15 @@ function getSaved(): Partial<AuditFormValues> {
 
 export function AuditForm({ onSubmit, isLoading = false }: AuditFormProps) {
   const saveTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
-  const saved = getSaved();
+  const [mounted, setMounted] = useState(false);
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const form = useForm<AuditFormValues, any, AuditFormValues>({
     resolver: zodResolver(auditFormSchema) as any, // Zod v4 / RHF v5 input-vs-output type mismatch
     defaultValues: {
-      tools: saved.tools ?? [{ ...DEFAULT_TOOL }],
-      teamSize: saved.teamSize ?? 1,
-      primaryUseCase: saved.primaryUseCase ?? "coding",
+      tools: [{ ...DEFAULT_TOOL }],
+      teamSize: 1,
+      primaryUseCase: "coding",
     },
   });
 
@@ -69,8 +69,21 @@ export function AuditForm({ onSubmit, isLoading = false }: AuditFormProps) {
     name: "tools",
   });
 
+  // After hydration, restore saved form values from localStorage
+  useEffect(() => {
+    setMounted(true);
+    const saved = getSaved();
+    if (saved.tools?.length) form.reset({
+      tools: saved.tools,
+      teamSize: saved.teamSize ?? 1,
+      primaryUseCase: saved.primaryUseCase ?? "coding",
+    });
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
   // Debounced localStorage persistence
   useEffect(() => {
+    if (!mounted) return;
     const sub = form.watch((values) => {
       if (saveTimer.current) clearTimeout(saveTimer.current);
       saveTimer.current = setTimeout(() => {
@@ -81,7 +94,7 @@ export function AuditForm({ onSubmit, isLoading = false }: AuditFormProps) {
       sub.unsubscribe();
       if (saveTimer.current) clearTimeout(saveTimer.current);
     };
-  }, [form]);
+  }, [form, mounted]);
 
   function handleVendorChange(index: number, vendor: Vendor) {
     const tiers = VENDOR_TIERS[vendor];
