@@ -1,4 +1,5 @@
 import { notFound } from "next/navigation";
+import Link from "next/link";
 import type { Metadata } from "next";
 import { getSupabaseClient } from "@/lib/supabase/client";
 import type { AuditResult } from "@/lib/audit/types";
@@ -65,15 +66,15 @@ export default async function SharePage({ params }: Props) {
     <div className="min-h-screen bg-background">
       <header className="border-b border-border bg-background/80 backdrop-blur-sm sticky top-0 z-10">
         <div className="max-w-2xl mx-auto px-4 h-14 flex items-center justify-between">
-          <a href="/" className="font-bold text-lg tracking-tight">
+          <Link href="/" className="font-bold text-lg tracking-tight">
             Stack<span className="text-emerald-600">Audit</span>
-          </a>
-          <a
+          </Link>
+          <Link
             href="/"
             className="text-sm text-muted-foreground hover:text-foreground transition-colors"
           >
             Audit your stack →
-          </a>
+          </Link>
         </div>
       </header>
 
@@ -88,12 +89,12 @@ export default async function SharePage({ params }: Props) {
         <ShareResultsView result={result} />
 
         <div className="text-center pt-4">
-          <a
+          <Link
             href="/"
             className="inline-flex items-center gap-2 bg-emerald-600 hover:bg-emerald-700 text-white font-semibold px-6 py-3 rounded-lg transition-colors"
           >
             Audit your own stack — free →
-          </a>
+          </Link>
         </div>
       </main>
     </div>

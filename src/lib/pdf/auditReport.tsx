@@ -210,7 +210,7 @@ function RecCard({ rec, index }: { rec: Recommendation; index: number }) {
 
 function AuditReportDoc({ result, summary }: { result: AuditResult; summary?: string }) {
   const { totalMonthlySavings, totalAnnualSavings, recommendations, isAlreadyOptimal, showCredexCta, input } = result;
-  const reportDate = new Date(result.createdAt ?? Date.now()).toLocaleDateString("en-US", { year: "numeric", month: "long", day: "numeric" });
+  const reportDate = new Date(result.createdAt ?? new Date().toISOString()).toLocaleDateString("en-US", { year: "numeric", month: "long", day: "numeric" });
   const savingsRecs = recommendations.filter(r => r.monthlySavings > 0);
   const keepRecs    = recommendations.filter(r => r.action === "keep");
 
@@ -230,7 +230,7 @@ function AuditReportDoc({ result, summary }: { result: AuditResult; summary?: st
         {isAlreadyOptimal ? (
           <View style={s.optimalBox}>
             <Text style={s.optimalTitle}>Your stack is lean ✓</Text>
-            <Text style={s.optimalSub}>No significant savings found (&lt;$100/mo). You're spending well on AI tools.</Text>
+            <Text style={s.optimalSub}>No significant savings found (&lt;$100/mo). You&apos;re spending well on AI tools.</Text>
           </View>
         ) : (
           <View style={s.heroBox}>

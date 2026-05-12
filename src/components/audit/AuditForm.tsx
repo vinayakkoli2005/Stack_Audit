@@ -54,9 +54,10 @@ export function AuditForm({ onSubmit, isLoading = false }: AuditFormProps) {
   const saveTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const [mounted, setMounted] = useState(false);
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any -- Zod v4 / RHF v5 input-vs-output type mismatch
   const form = useForm<AuditFormValues, any, AuditFormValues>({
-    resolver: zodResolver(auditFormSchema) as any, // Zod v4 / RHF v5 input-vs-output type mismatch
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    resolver: zodResolver(auditFormSchema) as any,
     defaultValues: {
       tools: [{ ...DEFAULT_TOOL }],
       teamSize: 1,
@@ -111,6 +112,7 @@ export function AuditForm({ onSubmit, isLoading = false }: AuditFormProps) {
   }
 
   return (
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     <form onSubmit={form.handleSubmit(onSubmit as any)} className="space-y-6">
       {/* Tool cards */}
       <div className="space-y-4">
