@@ -12,6 +12,23 @@ StackAudit is a deterministic AI tool spend auditor built for Credex. It takes y
 
 > Also runs locally with `npm run dev` — see setup below.
 
+### Demo video
+
+**[Watch on Google Drive](https://drive.google.com/file/d/1sF95rcm60-JSsevgSfvwSQwwjgevMKhQ/view?usp=sharing)**
+
+> The video file is also included in the repository root (`demo-video.*`).
+
+### Lighthouse scores (incognito, deployed to Vercel)
+
+| Category | Score |
+|---|---|
+| Performance | 92 |
+| Accessibility | 96 |
+| Best Practices | 100 |
+| SEO | 100 |
+
+Screenshots: [`images/`](images/)
+
 ---
 
 ## What it does
