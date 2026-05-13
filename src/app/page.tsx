@@ -22,7 +22,7 @@ export default function Home() {
           <h1 className="text-4xl sm:text-5xl font-bold tracking-tight leading-tight">
             Find out how much you&apos;re{" "}
             <span className="text-emerald-600">overspending on AI tools</span>
-            {" "}— in 60 seconds.
+            {" "}in a few seconds.
           </h1>
           <p className="text-muted-foreground text-lg max-w-xl mx-auto">
             Enter your current AI tool stack. We&apos;ll show you where you&apos;re overpaying,
