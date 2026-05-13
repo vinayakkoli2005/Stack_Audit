@@ -99,6 +99,68 @@ Three interviews conducted May 8–11, 2026. Participants recruited via personal
 
 ---
 
+## Interview 4 — Yashasvi
+
+**Date:** 2026-05-13
+**Role:** Student, 21
+**AI tools in use:** ChatGPT Plus (personal)
+**Monthly AI spend:** $20/month
+
+### What I asked / what she said
+
+**Q: What do you use ChatGPT Plus for?**
+> "Mostly coding — assignments, debugging, understanding concepts."
+
+**Q: Did you know there are cheaper or better alternatives specifically for coding, like Cursor?**
+> "I've heard of them but I'm not sure how good they are compared to ChatGPT."
+
+**Q: Have you ever felt like you're not getting full value from the $20/month?**
+> "Yes, sometimes. Like I don't use it every day so some months I wonder if it's worth it."
+
+**Q: When you saw the audit results, did the findings make sense?**
+> "Yes, it made sense. It said I could switch to something more coding-focused."
+
+**Q: Would you share the audit result with anyone?**
+> "No — it feels embarrassing and I'm using it individually so there's no reason to share."
+
+### Key insights
+- Students on personal paid plans often don't track whether they use the tool enough to justify the cost
+- Awareness of alternatives exists but confidence to switch is low — "not sure how good they are"
+- Solo users have no sharing motivation; the share feature is more relevant for team contexts
+
+---
+
+## Interview 5 — Nishant
+
+**Date:** 2026-05-13
+**Role:** Software Engineering Intern, 21
+**AI tools in use:** Codex (paid), Claude Code (paid)
+**Monthly AI spend:** ~$40/month ($20 each)
+
+### What I asked / what he said
+
+**Q: What do you use both tools for?**
+> "Coding, code reviews, understanding codebases, normal conversations. Both are paid plans."
+
+**Q: Do they overlap, or do they do different things?**
+> "Both tools are not universally good — one is better at certain things, the other is better at something else. I use both because neither covers everything."
+
+**Q: When you saw the audit, what was your reaction?**
+> "Fascinated. I hadn't thought about the cost side of having two tools."
+
+**Q: Would you share the result — for example forward it to your manager at the company?**
+> "Yes, definitely."
+
+**Q: Any specific feedback on the product?**
+> "Really liked the email feature — sending the report directly to a CEO or manager is useful. That's the kind of thing that would actually get acted on."
+
+### Key insights
+- Power users running two paid tools simultaneously often justify it on capability grounds ("one is better at X") — the redundancy rule needs to be careful not to over-fire here
+- The email/share-to-CEO feature resonated strongly — confirms that the handoff to decision-makers is the most valued feature for team users
+- Interns and junior devs may not control their own tool budget but can surface the audit to someone who does
+
+---
+
 ## Synthesis — What all three interviews agree on
 
 1. **The stack accumulates organically.** No one designed it. This means there's always overlap — it's the default outcome, not an exception.
